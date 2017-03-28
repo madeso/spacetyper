@@ -48,12 +48,6 @@ include_directories(SYSTEM ${CMAKE_CURRENT_BINARY_DIR})
 
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
-set(pbjson_src
-		${CMAKE_SOURCE_DIR}/external/pbjson/src/pbjson.cpp
-		${CMAKE_SOURCE_DIR}/external/pbjson/src/pbjson.hpp
-		${CMAKE_SOURCE_DIR}/external/pbjson/src/bin2ascii.h
-		)
-include_directories(${CMAKE_SOURCE_DIR}/external/pbjson/src/)
 
 add_subdirectory(euphoria)
 
