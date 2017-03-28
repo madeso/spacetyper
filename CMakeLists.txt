@@ -55,10 +55,7 @@ set(pbjson_src
 		)
 include_directories(${CMAKE_SOURCE_DIR}/external/pbjson/src/)
 
-add_subdirectory(core)
-add_subdirectory(render)
-add_subdirectory(gui)
-add_subdirectory(scimed)
-add_subdirectory(spacetyper)
-add_subdirectory(tests)
+add_subdirectory(euphoria)
 
+include_directories(euphoria)
+add_subdirectory(spacetyper)
