@@ -6,7 +6,7 @@ include_directories(SYSTEM ${SDL2_INCLUDE_DIR})
 set(app_src ${app_src_glob})
 source_group("" FILES ${app_src})
 
-set(all_src ${app_src} ${pbjson_src} ${src_glew} ${src_aheasing})
+set(all_src ${app_src} ${pbjson_src} ${src_glew})
 
 add_executable(spacetyper WIN32 MACOSX_BUNDLE ${all_src})
 set_target_properties(spacetyper
