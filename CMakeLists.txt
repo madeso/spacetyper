@@ -7,18 +7,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
-    "${PROJECT_SOURCE_DIR}/cmake-modules")
-
-find_package(OpenGL REQUIRED)
-
-find_package(GMock REQUIRED)
-
-FIND_PACKAGE(Threads REQUIRED) # for gmock
-
-find_package(Protobuf REQUIRED)
-include_directories(${PROTOBUF_INCLUDE_DIRS})
-
 SET(MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/osx-bundle.plist")
 
 if(${APPLE})
@@ -44,10 +32,6 @@ if(CMAKE_CONFIGURATION_TYPES)
 endif()
 
 include_directories(${CMAKE_SOURCE_DIR})
-include_directories(SYSTEM ${CMAKE_CURRENT_BINARY_DIR})
-
-find_package(Protobuf REQUIRED)
-include_directories(${PROTOBUF_INCLUDE_DIRS})
 
 add_subdirectory(euphoria)
 

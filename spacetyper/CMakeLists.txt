@@ -1,5 +1,7 @@
 file(GLOB app_src_glob *.cpp;*.cc;*.h;*.inl)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
+    "${PROJECT_SOURCE_DIR}/cmake-modules")
 find_package(SDL2 REQUIRED)
 include_directories(SYSTEM ${SDL2_INCLUDE_DIR})
 
@@ -21,7 +23,6 @@ target_link_libraries(spacetyper
                       core
                       gui
                       render
-                      ${OPENGL_LIBRARIES}
                       ${SDL2_LIBRARY}
                       )
 
