@@ -1,8 +1,8 @@
 #ifndef SPACETYPER_BULLETLIST_H
 #define SPACETYPER_BULLETLIST_H
 
-#include <vector>
 #include <memory>
+#include <vector>
 
 #include "core/vec2.h"
 
@@ -12,24 +12,25 @@ class EnemyWord;
 class Layer;
 
 class BulletType {
- public:
+public:
   typedef std::shared_ptr<Sprite> SpritePtr;
 
   ~BulletType();
 
-  EnemyWord* word;
+  EnemyWord *word;
   SpritePtr sprite;
 };
 
 class BulletList {
- public:
-  explicit BulletList(Layer* layer);
-  float Add(EnemyWord* word, Texture2d* t, const vec2f& pos);
+public:
+  explicit BulletList(Layer *layer);
+  float Add(EnemyWord *word, std::shared_ptr<Texture2d> t, const vec2f &pos);
   void Update(float d);
- private:
-  Layer* layer_;
+
+private:
+  Layer *layer_;
   typedef std::vector<BulletType> Bullets;
   Bullets bullets_;
 };
 
-#endif  // SPACETYPER_BULLETLIST_H
+#endif // SPACETYPER_BULLETLIST_H

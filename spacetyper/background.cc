@@ -6,7 +6,7 @@
 #include "render/texture.h"
 
 namespace {
-std::mt19937& Generator() {
+std::mt19937 &Generator() {
   static std::random_device rd;
   static std::mt19937 gen(rd());
   return gen;
@@ -22,11 +22,12 @@ std::uniform_real_distribution<float> GetDistribution(float window,
   return rwidth;
 }
 
-Background::Background(int count, int width, int height, Texture2d* texture,
-                       float speed, Layer* layer)
-    : width_(width), height_(height) , speed_(speed) {
-  auto rwidth = GetDistribution(width, texture->width());
-  auto rheight = GetDistribution(height, texture->height());
+Background::Background(int count, int width, int height,
+                       std::shared_ptr<Texture2d> texture, float speed,
+                       Layer *layer)
+    : width_(width), height_(height), speed_(speed) {
+  auto rwidth = GetDistribution(width, texture->GetWidth());
+  auto rheight = GetDistribution(height, texture->GetHeight());
 
   positions_.reserve(count);
   for (int i = 0; i < count; ++i) {
@@ -38,7 +39,7 @@ Background::Background(int count, int width, int height, Texture2d* texture,
 }
 
 void Background::Update(float delta) {
-  for (Sprite& sp : positions_) {
+  for (Sprite &sp : positions_) {
     vec2f p = sp.GetPosition();
     p.y += delta * speed_;
 

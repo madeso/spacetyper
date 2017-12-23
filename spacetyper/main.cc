@@ -5,24 +5,28 @@
 #include "render/spriterender.h"
 #include "spacetyper/spritefader.h"
 
-#include "spacetyper/background.h"
+#include "core/interpolate.h"
+#include "core/os.h"
 #include "render/debuggl.h"
-#include "render/scalablesprite.h"
 #include "render/fonts.h"
+#include "render/init.h"
+#include "render/scalablesprite.h"
+#include "render/shaderattribute2d.h"
 #include "render/texturecache.h"
+#include "render/viewport.h"
+#include "spacetyper/background.h"
+#include "spacetyper/bulletlist.h"
 #include "spacetyper/dictionary.h"
 #include "spacetyper/enemies.h"
 #include "spacetyper/enemyword.h"
-#include "spacetyper/bulletlist.h"
-#include "core/interpolate.h"
-#include "render/init.h"
-#include "render/viewport.h"
-#include "render/shaderattribute2d.h"
 
 #include "gui/root.h"
 
-int main(int argc, char** argv) {
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) < 0) {
+int
+main(int argc, char** argv)
+{
+  if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) < 0)
+  {
     std::cerr << "Failed to init SDL: " << SDL_GetError() << "\n";
     return -1;
   }
@@ -47,50 +51,68 @@ int main(int argc, char** argv) {
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
-  int width = 800;
+  int width  = 800;
   int height = 600;
 
-  SDL_Window* window = SDL_CreateWindow("Space Typer", SDL_WINDOWPOS_UNDEFINED,
-                                        SDL_WINDOWPOS_UNDEFINED, width, height,
-                                        SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+  SDL_Window* window = SDL_CreateWindow(
+      "Space Typer",
+      SDL_WINDOWPOS_UNDEFINED,
+      SDL_WINDOWPOS_UNDEFINED,
+      width,
+      height,
+      SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 
-  if (window == NULL) {
+  if(window == NULL)
+  {
     std::cerr << "Failed to create window " << SDL_GetError() << "\n";
     return -1;
   }
 
   SDL_GL_CreateContext(window);
-  Init init;
+  Init init{SDL_GL_GetProcAddress, Init::BlendHack::EnableHack};
 
-  if (init.ok == false) {
+  if(init.ok == false)
+  {
     return -4;
   }
 
   SetupOpenglDebug();
 
-  TextureCache cache;
-  Shader shader;
+  const auto current_directory = GetCurrentDirectory();
+  FileSystem file_system;
+  FileSystemRootFolder::AddRoot(&file_system, current_directory);
+
+  TextureCache cache{&file_system};
+  Shader       shader;
   attributes2d::PrebindShader(&shader);
-  shader.Load("shaders/sprite");
+  shader.Load(&file_system, "shaders/sprite");
   Shader font_shader;
   attributes2d::PrebindShader(&font_shader);
-  font_shader.Load("shaders/font");
+  font_shader.Load(&file_system, "shaders/font");
   Shader back_shader;
   attributes2d::PrebindShader(&back_shader);
-  back_shader.Load("shaders/back");
-  Font font(&font_shader, "SourceCodePro-Regular.ttf", 30, " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ;:,.-_<>|1234567890!\"#¤%&/()'=?@£$€¥{[]}\\'*");
-  // (cache.GetTexture("metalPanel_blueCorner.png"), 62, 14, 33, 14, vec2f(240, 240));
-  ScalableSprite target("crosshair.png", Sizef::FromWidthHeight(100, 100), &cache);
+  back_shader.Load(&file_system, "shaders/back");
+  Font font(
+      &font_shader,
+      "SourceCodePro-Regular.ttf",
+      30,
+      " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ;:,.-_<>|"
+      "1234567890!\"#¤%&/()'=?@£$€¥{[]}\\'*");
+  // (cache.GetTexture("metalPanel_blueCorner.png"), 62, 14, 33, 14, vec2f(240,
+  // 240));
+  ScalableSprite target(
+      "crosshair.png", Sizef::FromWidthHeight(100, 100), &cache);
   SpriteRenderer renderer(&shader);
-
 
   Dictionary dictionary;
 
-  Layer background(&renderer);
-  Layer objects(&renderer);
-  Layer foreground(&renderer);
-  Background smallStars(25, width, height, cache.GetTexture("starSmall.png"), 20, &background);
-  Background bigStars(15, width, height, cache.GetTexture("starBig.png"), 50, &background);
+  Layer      background(&renderer);
+  Layer      objects(&renderer);
+  Layer      foreground(&renderer);
+  Background smallStars(
+      25, width, height, cache.GetTexture("starSmall.png"), 20, &background);
+  Background bigStars(
+      15, width, height, cache.GetTexture("starBig.png"), 50, &background);
 
   SpriteFader fader(&foreground);
 
@@ -119,9 +141,13 @@ int main(int argc, char** argv) {
   vec2f shipPos(width / 2, height - player.GetHeight() / 2 - 10);
   player.SetPosition(shipPos);
 
-  mat4f projection =
-      mat4f::Ortho(0.0f, static_cast<float>(width),
-                 static_cast<float>(height), 0.0f, -1.0f, 1.0f);
+  mat4f projection = mat4f::Ortho(
+      0.0f,
+      static_cast<float>(width),
+      static_cast<float>(height),
+      0.0f,
+      -1.0f,
+      1.0f);
   Use(&shader);
   shader.SetUniform(shader.GetUniform("image"), 0);
   shader.SetUniform(shader.GetUniform("projection"), projection);
@@ -133,85 +159,114 @@ int main(int argc, char** argv) {
   Use(&back_shader);
   back_shader.SetUniform(back_shader.GetUniform("projection"), projection);
 
-  SetupFullViewport(width, height);
+  Viewport viewport{
+      Recti::FromWidthHeight(width, height).SetBottomLeftToCopy(0, 0)};
+  viewport.Activate();
 
   TextBackgroundRenderer text_back(&back_shader);
 
-  Root gui(Sizef::FromWidthHeight(width, height));
-  const bool gui_loaded = gui.Load(&font, "gui.json", &cache, &text_back);
+  Root       gui(Sizef::FromWidthHeight(width, height));
+  const bool gui_loaded =
+      gui.Load(&file_system, &font, "gui.json", &cache, &text_back);
 
-  if( gui_loaded == false ) {
+  if(gui_loaded == false)
+  {
     std::cerr << "Failed to load gui\n";
   }
 
-  Uint64 NOW = SDL_GetPerformanceCounter();
+  Uint64 NOW  = SDL_GetPerformanceCounter();
   Uint64 LAST = 0;
 
   SDL_StartTextInput();
 
   BulletList bullets(&objects);
-  Enemies enemies(&fader, &cache, &font, &text_back, &objects, &dictionary, width, &bullets);
+  Enemies    enemies(
+      &fader,
+      &cache,
+      &font,
+      &text_back,
+      &objects,
+      &dictionary,
+      width,
+      &bullets);
   EnemyWord* current_word = nullptr;
 
   enemies.SpawnEnemies(5);
 
   FloatInterpolate player_rotation(0.0f);
-  const float ROTATION_TIME = 0.5f;
-  const float SCALE_TIME = 0.6f;
+  const float      ROTATION_TIME = 0.5f;
+  const float      SCALE_TIME    = 0.6f;
 
   FloatInterpolate target_scale(1.0f);
 
+  // todo: figure out why gui isnt rendering...
   bool gui_running = gui_loaded;
-  bool running = true;
+  bool running     = true;
 
-  int mouse_x = 0;
-  int mouse_y = 0;
+  int  mouse_x        = 0;
+  int  mouse_y        = 0;
   bool mouse_lmb_down = false;
 
-  while (running) {
-    LAST = NOW;
-    NOW = SDL_GetPerformanceCounter();
+  while(running)
+  {
+    LAST           = NOW;
+    NOW            = SDL_GetPerformanceCounter();
     const float dt = (NOW - LAST) * 1.0f / SDL_GetPerformanceFrequency();
-    SDL_Event e;
+    SDL_Event   e;
 
-    while (SDL_PollEvent(&e) != 0) {
-      if (e.type == SDL_QUIT) {
+    while(SDL_PollEvent(&e) != 0)
+    {
+      if(e.type == SDL_QUIT)
+      {
         running = false;
       }
-      else if( e.type == SDL_MOUSEMOTION ) {
+      else if(e.type == SDL_MOUSEMOTION)
+      {
         mouse_x = e.motion.x;
         mouse_y = e.motion.y;
       }
-      else if( e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP ) {
+      else if(e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP)
+      {
         const bool down = e.type == SDL_MOUSEBUTTONDOWN;
-        mouse_x = e.button.x;
-        mouse_y = e.button.y;
-        if( e.button.button == SDL_BUTTON_LEFT) {
+        mouse_x         = e.button.x;
+        mouse_y         = e.button.y;
+        if(e.button.button == SDL_BUTTON_LEFT)
+        {
           mouse_lmb_down = down;
         }
       }
-      else if( e.type == SDL_TEXTINPUT ) {
+      else if(e.type == SDL_TEXTINPUT)
+      {
         const std::string& input = e.text.text;
-        if(gui_running) {
+        if(gui_running)
+        {
         }
-        else {
-          if( current_word == nullptr ) {
+        else
+        {
+          if(current_word == nullptr)
+          {
             current_word = enemies.DetectWord(input);
-            if( current_word != nullptr ) {
-              const float target_rotation = enemies.FireAt(shipPos, current_word);
+            if(current_word != nullptr)
+            {
+              const float target_rotation =
+                  enemies.FireAt(shipPos, current_word);
               player_rotation.Clear().BackOut(target_rotation, ROTATION_TIME);
               target_scale.SetValue(19.0f).Clear().CircOut(1.0f, SCALE_TIME);
             }
           }
-          else {
+          else
+          {
             const bool hit = current_word->Type(input);
-            if( hit ) {
-              const float target_rotation = enemies.FireAt(shipPos, current_word);
+            if(hit)
+            {
+              const float target_rotation =
+                  enemies.FireAt(shipPos, current_word);
               player_rotation.Clear().BackOut(target_rotation, ROTATION_TIME);
             }
-            if( current_word->IsAlive() == false ) {
+            if(current_word->IsAlive() == false)
+            {
               enemies.Remove(current_word);
-              current_word = nullptr;
+              current_word                = nullptr;
               const float target_rotation = 0.0f;
               player_rotation.Clear().BackOut(target_rotation, ROTATION_TIME);
             }
@@ -220,11 +275,13 @@ int main(int argc, char** argv) {
       }
     }
 
-    if( gui_running ) {
+    if(gui_running)
+    {
       gui.SetInputMouse(vec2f(mouse_x, mouse_y), mouse_lmb_down);
       gui.Step(dt);
     }
-    else {
+    else
+    {
       smallStars.Update(dt);
       bigStars.Update(dt);
       enemies.Update(dt);
@@ -242,24 +299,27 @@ int main(int argc, char** argv) {
     }
     */
 
-    init.ClearScreen();
+    init.ClearScreen(Rgb::From(Color::DarkslateGray));
 
     background.Render();
     objects.Render();
     enemies.Render();
     foreground.Render();
 
-    if( current_word != nullptr ) {
-      const Sizef extra_size = Sizef::FromWidthHeight(40, 40);
-      const Sizef size = current_word->GetSize();
-      const Sizef size_and_extra = size + extra_size;
-      const Sizef scaled_size = size_and_extra * target_scale.GetValue();
+    if(current_word != nullptr)
+    {
+      const Sizef extra_size      = Sizef::FromWidthHeight(40, 40);
+      const Sizef size            = current_word->GetSize();
+      const Sizef size_and_extra  = size + extra_size;
+      const Sizef scaled_size     = size_and_extra * target_scale.GetValue();
       const vec2f scaled_size_vec = scaled_size;
       target.SetSize(scaled_size);
-      renderer.DrawNinepatch(target, current_word->GetPosition() - scaled_size_vec/2.0f);
+      renderer.DrawNinepatch(
+          target, current_word->GetPosition() - scaled_size_vec / 2.0f);
     }
 
-    if( gui_running ) {
+    if(gui_running)
+    {
       gui.Render(&renderer);
     }
 

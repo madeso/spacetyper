@@ -2,8 +2,8 @@
 #define SPACETYPER_SPRITEFADER_H
 
 #include <memory>
-#include <vector>
 #include <random>
+#include <vector>
 
 #include "core/vec2.h"
 
@@ -18,22 +18,22 @@ struct FadingSprite {
 };
 
 class SpriteFader {
- public:
-  explicit SpriteFader(Layer* layer);
-  void RegisterTexture(Texture2d *t);
-  void AddRandom(const vec2f& pos, float time, float width, float height);
+public:
+  explicit SpriteFader(Layer *layer);
+  void RegisterTexture(std::shared_ptr<Texture2d> t);
+  void AddRandom(const vec2f &pos, float time, float width, float height);
 
   void Update(float dt);
 
- private:
+private:
   mutable std::mt19937 generator_;
-  Layer* layer_;
+  Layer *layer_;
 
-  typedef std::vector<Texture2d*> Textures;
+  typedef std::vector<std::shared_ptr<Texture2d>> Textures;
   Textures textures_;
 
   typedef std::vector<FadingSprite> Sprites;
   Sprites sprites_;
 };
 
-#endif  // SPACETYPER_SPRITEFADER_H
+#endif // SPACETYPER_SPRITEFADER_H
