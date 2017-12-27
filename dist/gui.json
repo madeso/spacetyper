@@ -3,21 +3,18 @@
     {
       "font": "",
       "button_idle": {
-        "image_color": {"r": 1, "g": 0, "b": 0},
-        "text_color": {"r": 0, "g": 0, "b": 1},
-        "interpolate_size": "ElasticOut",
-        "interpolate_size_time": 1.0
+        "interpolate_size": "QuadOut",
+        "interpolate_size_time": 0.2
       },
       "button_hot": {
-        "scale": 2,
-        "interpolate_size": "ElasticOut",
-        "interpolate_size_time": 1.0
+        "scale": 1.1,
+        "interpolate_size": "QuadOut",
+        "interpolate_size_time": 0.2
       },
       "button_active_hot": {
-        "dx": -5,
-        "dy": -5,
-        "interpolate_size": "BounceOut",
-        "interpolate_size_time": 1.0
+        "scale": 0.9,
+        "interpolate_size": "QuadOut",
+        "interpolate_size_time": 0.2
       }
     }
   ],
@@ -31,12 +28,13 @@
 
     "widgets" : [
       {
+        "name": "root panel",
         "column": 1, "row": 1,
         "panel": {
           "container": {
             "widgets": [
-              {"button": {"text": "hello", "command": "said hello"}},
-              {"button": {"text": "world", "command": "said world"}}
+              {"name": "hello btn", "button": {"text": "hello", "command": "said hello"}},
+              {"name": "world btn", "button": {"text": "world", "command": "said world"}}
             ]
           }
         }

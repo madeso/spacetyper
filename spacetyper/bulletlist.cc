@@ -64,7 +64,7 @@ BulletList::Update(float dt)
       float a  = PI - acos(aa);
       if(dn.x < 0)
         a = -a;
-      b.sprite->SetRotation(a);
+      b.sprite->rotation = Angle::FromRadians(a);
     }
   }
 

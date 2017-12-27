@@ -92,12 +92,7 @@ main(int argc, char** argv)
   Shader back_shader;
   attributes2d::PrebindShader(&back_shader);
   back_shader.Load(&file_system, "shaders/back");
-  Font font(
-      &font_shader,
-      "SourceCodePro-Regular.ttf",
-      30,
-      " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ;:,.-_<>|"
-      "1234567890!\"#¤%&/()'=?@£$€¥{[]}\\'*");
+  Font font(&file_system, &font_shader, "gamefont.json");
   // (cache.GetTexture("metalPanel_blueCorner.png"), 62, 14, 33, 14, vec2f(240,
   // 240));
   ScalableSprite target(
@@ -289,7 +284,7 @@ main(int argc, char** argv)
       fader.Update(dt);
       player_rotation.Update(dt);
       target_scale.Update(dt);
-      player.SetRotation(player_rotation);
+      player.rotation = Angle::FromRadians(player_rotation);
     }
 
     /*
@@ -315,7 +310,7 @@ main(int argc, char** argv)
       const vec2f scaled_size_vec = scaled_size;
       target.SetSize(scaled_size);
       renderer.DrawNinepatch(
-          target, current_word->GetPosition() - scaled_size_vec / 2.0f);
+          target, current_word->GetPosition() - scaled_size_vec / 2.0f + vec2f{0,size_and_extra.GetHeight()});
     }
 
     if(gui_running)
