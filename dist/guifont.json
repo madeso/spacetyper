@@ -1,0 +1,9 @@
+{
+  "size": 30,
+  "sources": [
+    { "font": {
+      "file": "kenvector_future.ttf",
+      "characters": " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ;:,.-_<>|1234567890!\"#¤%&/()'=?@£$€¥{[]}\\'*"
+    }}
+  ]
+}

@@ -12,7 +12,6 @@ Enemies::Enemies(
     SpriteFader*            fader,
     TextureCache*           cache,
     Font*                   font,
-    TextBackgroundRenderer* text_back,
     Layer*                  layer,
     Dictionary*             dictionary,
     float                   width,
@@ -21,7 +20,6 @@ Enemies::Enemies(
     , generator_(std::random_device()())
     , cache_(cache)
     , font_(font)
-    , text_back_(text_back)
     , layer_(layer)
     , dictionary_(dictionary)
     , width_(width)
@@ -70,7 +68,6 @@ Enemies::AddEnemy()
       fader_,
       cache_,
       font_,
-      text_back_,
       GenerateUniqueWord(characters, dictionary_)));
   e->AddSprite(layer_);
   e->Setup(&generator_, width_);
@@ -120,11 +117,11 @@ Enemies::Update(float delta)
 }
 
 void
-Enemies::Render()
+Enemies::Render(SpriteRenderer* renderer)
 {
   for(auto& e : enemies_)
   {
-    e->Render();
+    e->Render(renderer);
   }
 }
 

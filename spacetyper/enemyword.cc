@@ -6,14 +6,13 @@
 const int max_explosions = 20;
 
 EnemyWord::EnemyWord(
-    SpriteFader*            fader,
-    TextureCache*           cache,
-    Font*                   font,
-    TextBackgroundRenderer* text_back,
-    const std::string&      word)
+    SpriteFader*       fader,
+    TextureCache*      cache,
+    Font*              font,
+    const std::string& word)
     : fader_(fader)
     , sprite_(cache->GetTexture("enemyShip.png"))
-    , text_(font, text_back)
+    , text_(font)
     , position_(0.0f)
     , layer_(nullptr)
     , speed_(0.0f)
@@ -24,7 +23,7 @@ EnemyWord::EnemyWord(
     , knockback_(-1.0f)
 {
   text_.SetText(word);
-  text_.SetAlignment(Align::CENTER);
+  text_.SetAlignment(Align::BASELINE_CENTER);
   text_.SetBackground(true, 0.8f);
   text_.SetBaseColor(Rgb(1.0f));
   text_.SetHighlightColor(Rgb(0.0f, 0.0f, 1.0f));
@@ -101,11 +100,11 @@ EnemyWord::RemoveSprite()
 }
 
 void
-EnemyWord::Render()
+EnemyWord::Render(SpriteRenderer* renderer)
 {
   vec2f p = position_;
   p.y += sprite_.GetHeight() / 2.0f;
-  text_.Draw(p);
+  text_.Draw(renderer, p);
 }
 
 bool

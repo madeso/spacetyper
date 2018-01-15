@@ -1,7 +1,10 @@
 {
+  "cursor_image" : "gui/cursor_pointer3D.png",
+  "hover_image" : "gui/cursor_hand.png",
   "skins": [
     {
-      "font": "",
+      "font": "guifont.json",
+      "button_image": "gui/glassPanel_projection.png",
       "button_idle": {
         "interpolate_size": "QuadOut",
         "interpolate_size_time": 0.2
@@ -25,7 +28,6 @@
         "expanded_rows": [true, false, true]
       }
     },
-
     "widgets" : [
       {
         "name": "root panel",
@@ -33,8 +35,8 @@
         "panel": {
           "container": {
             "widgets": [
-              {"name": "hello btn", "button": {"text": "hello", "command": "said hello"}},
-              {"name": "world btn", "button": {"text": "world", "command": "said world"}}
+              {"name": "hello btn", "margin": {"left": 10, "right": 10, "top": 20, "bottom": 3}, "padding": {"left": 30, "right": 3, "top": 3, "bottom": 3}, "button": {"text": "hello", "command": "said hello"}},
+              {"name": "world btn", "margin": {"left": 10, "right": 10, "top": 3, "bottom": 3}, "padding": {"left": 30, "right": 3, "top": 3, "bottom": 20}, "button": {"text": "world is awesome", "command": "said world"}}
             ]
           }
         }

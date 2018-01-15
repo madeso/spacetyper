@@ -10,45 +10,61 @@
 #include "core/size.h"
 
 class TextureCache;
-class TextBackgroundRenderer;
 class SpriteFader;
 
-class EnemyWord {
+class EnemyWord
+{
  public:
-  EnemyWord(SpriteFader* fader, TextureCache* cache, Font* font, TextBackgroundRenderer* text_back, const std::string& word);
+  EnemyWord(
+      SpriteFader*       fader,
+      TextureCache*      cache,
+      Font*              font,
+      const std::string& word);
   ~EnemyWord();
 
-  void Setup(std::mt19937* generator, float screen_width);
+  void
+  Setup(std::mt19937* generator, float screen_width);
 
-  void Update(float delta);
+  void
+  Update(float delta);
 
-  void AddSprite(Layer* layer);
-  void RemoveSprite();
+  void
+  AddSprite(Layer* layer);
+  void
+  RemoveSprite();
 
-  void Render();
+  void
+  Render(SpriteRenderer* renderer);
 
-  bool Type(const std::string& input);
-  bool IsAlive() const;
+  bool
+  Type(const std::string& input);
+  bool
+  IsAlive() const;
 
-  const std::string& GetWord() const;
-  const vec2f& GetPosition() const;
-  const Sizef GetSize() const;
+  const std::string&
+  GetWord() const;
+  const vec2f&
+  GetPosition() const;
+  const Sizef
+  GetSize() const;
 
-  void Damage();
-  bool IsDestroyed() const;
+  void
+  Damage();
+  bool
+  IsDestroyed() const;
 
  private:
   SpriteFader* fader_;
-  Sprite sprite_;
-  Text text_;
-  vec2f position_;
-  Layer* layer_;
-  float speed_;
+  Sprite       sprite_;
+  Text         text_;
+  vec2f        position_;
+  Layer*       layer_;
+  float        speed_;
   unsigned int index_;
-  int health_;
-  float explisiontimer_;
-  int explosions_;
-  float knockback_;
+  int          health_;
+  float        explisiontimer_;
+  int          explosions_;
+  float        knockback_;
 };
 
 #endif  // SPACETYPER_ENEMYWORD_H

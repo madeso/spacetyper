@@ -10,6 +10,7 @@
 #include "render/debuggl.h"
 #include "render/fonts.h"
 #include "render/init.h"
+#include "render/fontcache.h"
 #include "render/scalablesprite.h"
 #include "render/shaderattribute2d.h"
 #include "render/texturecache.h"
@@ -80,19 +81,16 @@ main(int argc, char** argv)
 
   const auto current_directory = GetCurrentDirectory();
   FileSystem file_system;
+  file_system.SetWrite(
+      std::make_shared<FileSystemWriteFolder>(current_directory));
   FileSystemRootFolder::AddRoot(&file_system, current_directory);
 
   TextureCache cache{&file_system};
   Shader       shader;
   attributes2d::PrebindShader(&shader);
   shader.Load(&file_system, "shaders/sprite");
-  Shader font_shader;
-  attributes2d::PrebindShader(&font_shader);
-  font_shader.Load(&file_system, "shaders/font");
-  Shader back_shader;
-  attributes2d::PrebindShader(&back_shader);
-  back_shader.Load(&file_system, "shaders/back");
-  Font font(&file_system, &font_shader, "gamefont.json");
+  FontCache font_cache{&file_system};
+  auto      font = font_cache.GetFont("gamefont.json");
   // (cache.GetTexture("metalPanel_blueCorner.png"), 62, 14, 33, 14, vec2f(240,
   // 240));
   ScalableSprite target(
@@ -136,33 +134,18 @@ main(int argc, char** argv)
   vec2f shipPos(width / 2, height - player.GetHeight() / 2 - 10);
   player.SetPosition(shipPos);
 
-  mat4f projection = mat4f::Ortho(
-      0.0f,
-      static_cast<float>(width),
-      static_cast<float>(height),
-      0.0f,
-      -1.0f,
-      1.0f);
+  const mat4f projection = init.GetOrthoProjection(width, height);
   Use(&shader);
   shader.SetUniform(shader.GetUniform("image"), 0);
   shader.SetUniform(shader.GetUniform("projection"), projection);
-
-  Use(&font_shader);
-  font_shader.SetUniform(font_shader.GetUniform("image"), 0);
-  font_shader.SetUniform(font_shader.GetUniform("projection"), projection);
-
-  Use(&back_shader);
-  back_shader.SetUniform(back_shader.GetUniform("projection"), projection);
 
   Viewport viewport{
       Recti::FromWidthHeight(width, height).SetBottomLeftToCopy(0, 0)};
   viewport.Activate();
 
-  TextBackgroundRenderer text_back(&back_shader);
-
   Root       gui(Sizef::FromWidthHeight(width, height));
   const bool gui_loaded =
-      gui.Load(&file_system, &font, "gui.json", &cache, &text_back);
+      gui.Load(&file_system, &font_cache, "gui.json", &cache);
 
   if(gui_loaded == false)
   {
@@ -176,14 +159,7 @@ main(int argc, char** argv)
 
   BulletList bullets(&objects);
   Enemies    enemies(
-      &fader,
-      &cache,
-      &font,
-      &text_back,
-      &objects,
-      &dictionary,
-      width,
-      &bullets);
+      &fader, &cache, font.get(), &objects, &dictionary, width, &bullets);
   EnemyWord* current_word = nullptr;
 
   enemies.SpawnEnemies(5);
@@ -195,11 +171,12 @@ main(int argc, char** argv)
   FloatInterpolate target_scale(1.0f);
 
   // todo: figure out why gui isnt rendering...
-  bool gui_running = gui_loaded;
+  bool gui_running = false;
   bool running     = true;
 
-  int  mouse_x        = 0;
-  int  mouse_y        = 0;
+  int window_mouse_x = 0;
+  int window_mouse_y = 0;
+  SDL_GetMouseState(&window_mouse_x, &window_mouse_y);
   bool mouse_lmb_down = false;
 
   while(running)
@@ -217,14 +194,14 @@ main(int argc, char** argv)
       }
       else if(e.type == SDL_MOUSEMOTION)
       {
-        mouse_x = e.motion.x;
-        mouse_y = e.motion.y;
+        window_mouse_x = e.motion.x;
+        window_mouse_y = e.motion.y;
       }
       else if(e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP)
       {
         const bool down = e.type == SDL_MOUSEBUTTONDOWN;
-        mouse_x         = e.button.x;
-        mouse_y         = e.button.y;
+        window_mouse_x  = e.button.x;
+        window_mouse_y  = e.button.y;
         if(e.button.button == SDL_BUTTON_LEFT)
         {
           mouse_lmb_down = down;
@@ -272,7 +249,10 @@ main(int argc, char** argv)
 
     if(gui_running)
     {
-      gui.SetInputMouse(vec2f(mouse_x, mouse_y), mouse_lmb_down);
+      // Transform mouse position to the the euphoria coordinate system
+      const vec2f mouse_position{static_cast<float>(window_mouse_x),
+                                 static_cast<float>(height - window_mouse_y)};
+      gui.SetInputMouse(mouse_position, mouse_lmb_down);
       gui.Step(dt);
     }
     else
@@ -294,23 +274,27 @@ main(int argc, char** argv)
     }
     */
 
-    init.ClearScreen(Rgb::From(Color::DarkslateGray));
+    init.ClearScreen(Color::DarkslateGray);
 
     background.Render();
     objects.Render();
-    enemies.Render();
+    enemies.Render(&renderer);
     foreground.Render();
 
     if(current_word != nullptr)
     {
-      const Sizef extra_size      = Sizef::FromWidthHeight(40, 40);
-      const Sizef size            = current_word->GetSize();
-      const Sizef size_and_extra  = size + extra_size;
-      const Sizef scaled_size     = size_and_extra * target_scale.GetValue();
-      const vec2f scaled_size_vec = scaled_size;
-      target.SetSize(scaled_size);
+      const Sizef extra_size     = Sizef::FromWidthHeight(40, 40);
+      const Sizef size           = current_word->GetSize();
+      const Sizef size_and_extra = size + extra_size;
+      const Sizef scaled_size    = size_and_extra * target_scale.GetValue();
       renderer.DrawNinepatch(
-          target, current_word->GetPosition() - scaled_size_vec / 2.0f + vec2f{0,size_and_extra.GetHeight()});
+          target,
+          Rectf::FromPositionAnchorWidthAndHeight(
+              current_word->GetPosition(),
+              vec2f{0.5f, 0.5f},
+              scaled_size.GetWidth(),
+              scaled_size.GetHeight()),
+          Rgba{Color::White});
     }
 
     if(gui_running)
