@@ -131,7 +131,7 @@ main(int argc, char** argv)
   Sprite player(cache.GetTexture("player.png"));
   objects.Add(&player);
 
-  vec2f shipPos(width / 2, height - player.GetHeight() / 2 - 10);
+  vec2f shipPos(width / 2, player.GetHeight() / 2 + 10);
   player.SetPosition(shipPos);
 
   const mat4f projection = init.GetOrthoProjection(width, height);
