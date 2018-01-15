@@ -159,7 +159,14 @@ main(int argc, char** argv)
 
   BulletList bullets(&objects);
   Enemies    enemies(
-      &fader, &cache, font.get(), &objects, &dictionary, width, &bullets);
+      &fader,
+      &cache,
+      font.get(),
+      &objects,
+      &dictionary,
+      width,
+      height,
+      &bullets);
   EnemyWord* current_word = nullptr;
 
   enemies.SpawnEnemies(5);

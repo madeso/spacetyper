@@ -23,7 +23,7 @@ EnemyWord::EnemyWord(
     , knockback_(-1.0f)
 {
   text_.SetText(word);
-  text_.SetAlignment(Align::BASELINE_CENTER);
+  text_.SetAlignment(Align::TOP_CENTER);
   text_.SetBackground(true, 0.8f);
   text_.SetBaseColor(Rgb(1.0f));
   text_.SetHighlightColor(Rgb(0.0f, 0.0f, 1.0f));
@@ -35,18 +35,20 @@ EnemyWord::~EnemyWord()
 }
 
 void
-EnemyWord::Setup(std::mt19937* generator, float screen_width)
+EnemyWord::Setup(
+    std::mt19937* generator, float screen_width, float screen_height)
 {
   ASSERT(generator);
 
   const float w = std::max(sprite_.GetWidth(), text_.GetExtents().GetWidth());
   const float x = std::uniform_real_distribution<float>(
       w / 2.0f, screen_width - w / 2.0f)(*generator);
-  const float neg_y = sprite_.GetHeight() / 2.0f;
+  const float y = screen_height + sprite_.GetHeight() / 2.0f +
+                  text_.GetExtents().GetHeight();
 
   speed_      = std::uniform_real_distribution<float>(20.0f, 40.0f)(*generator);
   position_.x = x;
-  position_.y = -neg_y;
+  position_.y = y;
 }
 
 void
@@ -59,7 +61,7 @@ EnemyWord::Update(float delta)
     knockback_ -= delta * 5.0f;
   }
 
-  position_.y += delta * speed;
+  position_.y -= delta * speed;
   sprite_.SetPosition(position_);
 
   if(health_ <= 0)
@@ -103,7 +105,7 @@ void
 EnemyWord::Render(SpriteRenderer* renderer)
 {
   vec2f p = position_;
-  p.y += sprite_.GetHeight() / 2.0f;
+  p.y -= sprite_.GetHeight();
   text_.Draw(renderer, p);
 }
 

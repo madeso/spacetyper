@@ -9,13 +9,14 @@
 #include "spacetyper/enemyword.h"
 
 Enemies::Enemies(
-    SpriteFader*            fader,
-    TextureCache*           cache,
-    Font*                   font,
-    Layer*                  layer,
-    Dictionary*             dictionary,
-    float                   width,
-    BulletList*             bullets)
+    SpriteFader*  fader,
+    TextureCache* cache,
+    Font*         font,
+    Layer*        layer,
+    Dictionary*   dictionary,
+    float         width,
+    float         height,
+    BulletList*   bullets)
     : fader_(fader)
     , generator_(std::random_device()())
     , cache_(cache)
@@ -23,6 +24,7 @@ Enemies::Enemies(
     , layer_(layer)
     , dictionary_(dictionary)
     , width_(width)
+    , height_(height)
     , spawn_count_(0)
     , spawn_time_(-1.0f)
     , bullets_(bullets)
@@ -65,12 +67,9 @@ Enemies::AddEnemy()
   }
 
   EnemyPtr e(new EnemyWord(
-      fader_,
-      cache_,
-      font_,
-      GenerateUniqueWord(characters, dictionary_)));
+      fader_, cache_, font_, GenerateUniqueWord(characters, dictionary_)));
   e->AddSprite(layer_);
-  e->Setup(&generator_, width_);
+  e->Setup(&generator_, width_, height_);
   e->Update(0.0f);
   enemies_.push_back(e);
 }

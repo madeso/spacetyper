@@ -28,6 +28,7 @@ class Enemies
       Layer*        layer,
       Dictionary*   dictionary,
       float         width,
+      float         height,
       BulletList*   bullets);
   ~Enemies();
 
@@ -61,6 +62,7 @@ class Enemies
   Layer*               layer_;
   Dictionary*          dictionary_;
   float                width_;
+  float                height_;
 
   int   spawn_count_;
   float spawn_time_;

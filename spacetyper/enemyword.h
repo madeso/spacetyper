@@ -23,7 +23,7 @@ class EnemyWord
   ~EnemyWord();
 
   void
-  Setup(std::mt19937* generator, float screen_width);
+  Setup(std::mt19937* generator, float screen_width, float screen_height);
 
   void
   Update(float delta);
