@@ -149,7 +149,7 @@ EnemyWord::GetPosition() const
 const Sizef
 EnemyWord::GetSize() const
 {
-  return Sizef::FromHeightWidth(sprite_.GetWidth(), sprite_.GetHeight());
+  return Sizef::FromWidthHeight(sprite_.GetWidth(), sprite_.GetHeight());
 }
 
 void
