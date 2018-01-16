@@ -5,32 +5,37 @@
 #include <vector>
 
 #include "core/vec2.h"
+#include "core/angle.h"
 
 #include "render/sprite.h"
 
 class EnemyWord;
 class Layer;
 
-class BulletType {
-public:
+class BulletType
+{
+ public:
   typedef std::shared_ptr<Sprite> SpritePtr;
 
   ~BulletType();
 
-  EnemyWord *word;
-  SpritePtr sprite;
+  EnemyWord* word;
+  SpritePtr  sprite;
 };
 
-class BulletList {
-public:
-  explicit BulletList(Layer *layer);
-  float Add(EnemyWord *word, std::shared_ptr<Texture2d> t, const vec2f &pos);
-  void Update(float d);
+class BulletList
+{
+ public:
+  explicit BulletList(Layer* layer);
+  Angle
+  Add(EnemyWord* word, std::shared_ptr<Texture2d> t, const vec2f& pos);
+  void
+  Update(float d);
 
-private:
-  Layer *layer_;
+ private:
+  Layer*                          layer_;
   typedef std::vector<BulletType> Bullets;
-  Bullets bullets_;
+  Bullets                         bullets_;
 };
 
-#endif // SPACETYPER_BULLETLIST_H
+#endif  // SPACETYPER_BULLETLIST_H

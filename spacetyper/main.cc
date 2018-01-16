@@ -171,9 +171,9 @@ main(int argc, char** argv)
 
   enemies.SpawnEnemies(5);
 
-  FloatInterpolate player_rotation(0.0f);
-  const float      ROTATION_TIME = 0.5f;
-  const float      SCALE_TIME    = 0.6f;
+  Interpolate<Angle, AngleTransform> player_rotation(Angle::Zero());
+  const float ROTATION_TIME = 0.5f;
+  const float SCALE_TIME    = 0.6f;
 
   FloatInterpolate target_scale(1.0f);
 
@@ -227,7 +227,7 @@ main(int argc, char** argv)
             current_word = enemies.DetectWord(input);
             if(current_word != nullptr)
             {
-              const float target_rotation =
+              const Angle target_rotation =
                   enemies.FireAt(shipPos, current_word);
               player_rotation.Clear().BackOut(target_rotation, ROTATION_TIME);
               target_scale.SetValue(19.0f).Clear().CircOut(1.0f, SCALE_TIME);
@@ -238,15 +238,15 @@ main(int argc, char** argv)
             const bool hit = current_word->Type(input);
             if(hit)
             {
-              const float target_rotation =
+              const Angle target_rotation =
                   enemies.FireAt(shipPos, current_word);
               player_rotation.Clear().BackOut(target_rotation, ROTATION_TIME);
             }
             if(current_word->IsAlive() == false)
             {
               enemies.Remove(current_word);
-              current_word                = nullptr;
-              const float target_rotation = 0.0f;
+              current_word               = nullptr;
+              const auto target_rotation = Angle::Zero();
               player_rotation.Clear().BackOut(target_rotation, ROTATION_TIME);
             }
           }
@@ -271,7 +271,7 @@ main(int argc, char** argv)
       fader.Update(dt);
       player_rotation.Update(dt);
       target_scale.Update(dt);
-      player.rotation = Angle::FromRadians(player_rotation);
+      player.rotation = player_rotation;
     }
 
     /*

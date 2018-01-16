@@ -155,7 +155,7 @@ Enemies::Remove(EnemyWord* word)
   enemies_.erase(found);
 }
 
-float
+Angle
 Enemies::FireAt(const vec2f& pos, EnemyWord* word)
 {
   return bullets_->Add(word, cache_->GetTexture("laserBlue07.png"), pos);

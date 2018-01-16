@@ -19,7 +19,7 @@ BulletList::BulletList(Layer* layer)
 {
 }
 
-float
+Angle
 BulletList::Add(EnemyWord* word, std::shared_ptr<Texture2d> t, const vec2f& pos)
 {
   BulletType b;
@@ -33,7 +33,7 @@ BulletList::Add(EnemyWord* word, std::shared_ptr<Texture2d> t, const vec2f& pos)
   const vec2f  d  = w - p;
   const vec2f  dn = d.GetNormalized();
   float        aa = dot(vec2f(0.0f, 1.0f), dn);
-  float        a  = PI - acos(aa);
+  Angle        a  = Angle::FromRadians(PI) - Acos(aa);
   if(d.x < 0)
     a = -a;
   return a;

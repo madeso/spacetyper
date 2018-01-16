@@ -7,6 +7,7 @@
 #include <string>
 
 #include "core/vec2.h"
+#include "core/angle.h"
 
 class EnemyWord;
 class TextureCache;
@@ -51,7 +52,7 @@ class Enemies
   void
   Remove(EnemyWord* word);
 
-  float
+  Angle
   FireAt(const vec2f& pos, EnemyWord* word);
 
  private:
