@@ -28,14 +28,16 @@ BulletList::Add(EnemyWord* word, std::shared_ptr<Texture2d> t, const vec2f& pos)
   layer_->Add(b.sprite.get());
   bullets_.push_back(b);
 
+  // todo: move to core
   const vec2f& p  = pos;
   const vec2f& w  = word->GetPosition();
   const vec2f  d  = w - p;
   const vec2f  dn = d.GetNormalized();
   float        aa = dot(vec2f(0.0f, 1.0f), dn);
-  Angle        a  = Angle::FromRadians(PI) - Acos(aa);
-  if(d.x < 0)
+  Angle        a  = Acos(aa);
+  if(d.x > 0)
     a = -a;
+
   return a;
 }
 
@@ -63,7 +65,7 @@ BulletList::Update(float dt)
       float aa = dot(vec2f(0.0f, 1.0f), dn);
       float a  = PI - acos(aa);
       if(dn.x < 0)
-        a = -a;
+        a                = -a;
       b.sprite->rotation = Angle::FromRadians(a);
     }
   }
