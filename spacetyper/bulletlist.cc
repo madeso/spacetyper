@@ -20,6 +20,16 @@ BulletList::BulletList(Layer* layer)
 }
 
 Angle
+GetAngle(const vec2f& dn)
+{
+  float aa = dot(vec2f(0.0f, 1.0f), dn);
+  Angle a  = Acos(aa);
+  if(dn.x > 0)
+    a = -a;
+  return a;
+}
+
+Angle
 BulletList::Add(EnemyWord* word, std::shared_ptr<Texture2d> t, const vec2f& pos)
 {
   BulletType b;
@@ -33,18 +43,14 @@ BulletList::Add(EnemyWord* word, std::shared_ptr<Texture2d> t, const vec2f& pos)
   const vec2f& w  = word->GetPosition();
   const vec2f  d  = w - p;
   const vec2f  dn = d.GetNormalized();
-  float        aa = dot(vec2f(0.0f, 1.0f), dn);
-  Angle        a  = Acos(aa);
-  if(d.x > 0)
-    a = -a;
 
-  return a;
+  return GetAngle(dn);
 }
 
 void
 BulletList::Update(float dt)
 {
-  const float speed = 1000.0f;
+  const float speed = 100.0f;
   for(BulletType& b : bullets_)
   {
     const vec2f& p = b.sprite->GetPosition();
@@ -61,12 +67,7 @@ BulletList::Update(float dt)
     {
       const vec2f dn = d.GetNormalized();
       b.sprite->SetPosition(p + dn * speed * dt);
-
-      float aa = dot(vec2f(0.0f, 1.0f), dn);
-      float a  = PI - acos(aa);
-      if(dn.x < 0)
-        a                = -a;
-      b.sprite->rotation = Angle::FromRadians(a);
+      b.sprite->rotation = GetAngle(dn);
     }
   }
 
