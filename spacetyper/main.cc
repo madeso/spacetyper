@@ -89,7 +89,7 @@ main(int argc, char** argv)
   Shader       shader;
   attributes2d::PrebindShader(&shader);
   shader.Load(&file_system, "shaders/sprite");
-  FontCache font_cache{&file_system};
+  FontCache font_cache{&file_system, &cache};
   auto      font = font_cache.GetFont("gamefont.json");
   // (cache.GetTexture("metalPanel_blueCorner.png"), 62, 14, 33, 14, vec2f(240,
   // 240));
