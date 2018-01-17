@@ -178,7 +178,7 @@ main(int argc, char** argv)
   FloatInterpolate target_scale(1.0f);
 
   // todo: figure out why gui isnt rendering...
-  bool gui_running = false;
+  bool gui_running = gui_loaded;
   bool running     = true;
 
   int window_mouse_x = 0;
