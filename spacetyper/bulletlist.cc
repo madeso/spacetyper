@@ -50,7 +50,7 @@ BulletList::Add(EnemyWord* word, std::shared_ptr<Texture2d> t, const vec2f& pos)
 void
 BulletList::Update(float dt)
 {
-  const float speed = 100.0f;
+  const float speed = 1000.0f;
   for(BulletType& b : bullets_)
   {
     const vec2f& p = b.sprite->GetPosition();
