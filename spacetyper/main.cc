@@ -7,6 +7,9 @@
 
 #include "core/interpolate.h"
 #include "core/os.h"
+
+#include "core/filesystemimagegenerator.h"
+
 #include "render/debuggl.h"
 #include "render/fonts.h"
 #include "render/init.h"
@@ -84,6 +87,7 @@ main(int argc, char** argv)
   file_system.SetWrite(
       std::make_shared<FileSystemWriteFolder>(current_directory));
   FileSystemRootFolder::AddRoot(&file_system, current_directory);
+  FileSystemImageGenerator::AddRoot(&file_system, "img-plain");
 
   TextureCache cache{&file_system};
   Shader       shader;
@@ -177,7 +181,6 @@ main(int argc, char** argv)
 
   FloatInterpolate target_scale(1.0f);
 
-  // todo: figure out why gui isnt rendering...
   bool gui_running = gui_loaded;
   bool running     = true;
 
