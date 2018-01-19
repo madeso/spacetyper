@@ -28,8 +28,6 @@ EnemyWord::EnemyWord(
   text_.SetText(pt);
   text_.SetAlignment(Align::TOP_CENTER);
   text_.SetBackground(true, 0.8f);
-  text_.SetBaseColor(Rgb(1.0f));
-  text_.SetHighlightColor(Rgb(0.0f, 0.0f, 1.0f));
 }
 
 EnemyWord::~EnemyWord()
@@ -109,7 +107,7 @@ EnemyWord::Render(SpriteRenderer* renderer)
 {
   vec2f p = position_;
   p.y -= sprite_.GetHeight();
-  text_.Draw(renderer, p);
+  text_.Draw(renderer, p, Color::White, Color::Blue);
 }
 
 void
