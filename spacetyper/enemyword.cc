@@ -26,6 +26,7 @@ EnemyWord::EnemyWord(
   ParsedText pt;
   pt.CreateText(word);
   text_.SetText(pt);
+  text_.SetSize(30);
   text_.SetAlignment(Align::TOP_CENTER);
   text_.SetBackground(true, 0.8f);
 }

@@ -5,6 +5,7 @@
     {
       "font": "guifont.json",
       "button_image": "gui/glassPanel_projection.png",
+      "text_size": 30,
       "button_idle": {
         "interpolate_size": "QuadOut",
         "interpolate_size_time": 0.2
