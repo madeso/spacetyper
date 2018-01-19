@@ -12,6 +12,7 @@ EnemyWord::EnemyWord(
     const std::string& word)
     : fader_(fader)
     , sprite_(cache->GetTexture("enemyShip.png"))
+    , word_(word)
     , text_(font)
     , position_(0.0f)
     , layer_(nullptr)
@@ -22,7 +23,9 @@ EnemyWord::EnemyWord(
     , explosions_(0)
     , knockback_(-1.0f)
 {
-  text_.SetText(word);
+  ParsedText pt;
+  pt.CreateText(word);
+  text_.SetText(pt);
   text_.SetAlignment(Align::TOP_CENTER);
   text_.SetBackground(true, 0.8f);
   text_.SetBaseColor(Rgb(1.0f));
@@ -109,11 +112,40 @@ EnemyWord::Render(SpriteRenderer* renderer)
   text_.Draw(renderer, p);
 }
 
+void
+HighlightString(
+    ParsedText* text, const std::string& str, int hi_start, int hi_end)
+{
+  text->Clear();
+  if(hi_start == -1)
+  {
+    ASSERT(hi_end == -1);
+    text->AddText(str);
+  }
+  else
+  {
+    ASSERT(hi_start == 0);
+    ASSERT(hi_end >= 0);
+    if(hi_end == 0)
+    {
+      text->AddText(str);
+    }
+    else
+    {
+      // highlight to the end
+      text->AddBegin();
+      text->AddText(str.substr(0, hi_end));
+      text->AddEnd();
+      text->AddText(str.substr(hi_end));
+    }
+  }
+}
+
 bool
 EnemyWord::Type(const std::string& input)
 {
   ASSERT(IsAlive());
-  const std::string& t = text_.GetText();
+  const std::string& t = word_;
   const char         c = t[index_];
   const std::string  cstr(1, c);
   const bool         is_same = cstr == input;
@@ -121,7 +153,9 @@ EnemyWord::Type(const std::string& input)
   if(is_same)
   {
     index_ += 1;
-    text_.SetHighlightRange(0, index_);
+    ParsedText pt;
+    HighlightString(&pt, word_, 0, index_);
+    text_.SetText(pt);
   }
 
   return is_same;
@@ -130,14 +164,14 @@ EnemyWord::Type(const std::string& input)
 bool
 EnemyWord::IsAlive() const
 {
-  const std::string& t = text_.GetText();
+  const std::string& t = word_;
   return index_ < t.length();
 }
 
 const std::string&
 EnemyWord::GetWord() const
 {
-  return text_.GetText();
+  return word_;
 }
 
 const vec2f&

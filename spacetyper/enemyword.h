@@ -56,6 +56,7 @@ class EnemyWord
  private:
   SpriteFader* fader_;
   Sprite       sprite_;
+  std::string word_;
   Text         text_;
   vec2f        position_;
   Layer*       layer_;
