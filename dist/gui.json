@@ -36,7 +36,7 @@
         "panel": {
           "container": {
             "widgets": [
-              {"name": "hello btn", "margin": {"left": 10, "right": 10, "top": 20, "bottom": 3}, "padding": {"left": 30, "right": 3, "top": 3, "bottom": 3}, "button": {"text": "hello", "command": "said hello"}},
+              {"name": "hello btn", "margin": {"left": 10, "right": 10, "top": 20, "bottom": 3}, "padding": {"left": 30, "right": 3, "top": 3, "bottom": 3}, "button": {"text": "@close hello", "command": "said hello"}},
               {"name": "world btn", "margin": {"left": 10, "right": 10, "top": 3, "bottom": 3}, "padding": {"left": 30, "right": 3, "top": 3, "bottom": 20}, "button": {"text": "world is awesome", "command": "said world"}}
             ]
           }
