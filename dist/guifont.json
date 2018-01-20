@@ -7,7 +7,12 @@
     }},
     { "image": {
       "file": "cross.png",
-      "alias": "close",
+      "alias": "cross",
+      "bearing_y": -8
+    }},
+    { "image": {
+      "file": "checkmark.png",
+      "alias": "check",
       "bearing_y": -8
     }}
   ]
